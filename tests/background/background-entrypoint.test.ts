@@ -10,3 +10,12 @@ describe('background whitelist wiring', () => {
     expect(source).toContain('if (type === MESSAGE_TYPES.WHITELIST) return handleWhitelistRequest(message)');
   });
 });
+
+describe('background language wiring', () => {
+  it('새로 설치할 때만 브라우저 언어를 저장한다', () => {
+    const source = readFileSync(resolve(process.cwd(), 'entrypoints/background.ts'), 'utf8');
+
+    expect(source).toContain("if (details.reason === 'install') void initLanguageOnInstall()");
+    expect(source).not.toContain('keepLegacyLanguageOnUpdate');
+  });
+});

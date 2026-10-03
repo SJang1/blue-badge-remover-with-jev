@@ -1,9 +1,18 @@
 import { browser } from 'wxt/browser';
 import type { Settings } from '@shared/types';
 import { DEFAULT_SETTINGS, MESSAGE_TYPES, STORAGE_KEYS } from '@shared/constants';
+import { detectLanguage, type Language } from '@shared/i18n';
 import type { WhitelistRequest, WhitelistResponse } from './whitelist-storage';
 
 export type SettingsPatch = Partial<Omit<Settings, 'filter'>> & { filter?: Partial<Settings['filter']> };
+
+function browserLanguage(): Language {
+  try {
+    return detectLanguage(browser.i18n.getUILanguage());
+  } catch {
+    return 'en';
+  }
+}
 
 function mergeSettings(base: Partial<Settings> | undefined, patch: SettingsPatch = {}): Settings {
   return {
@@ -28,6 +37,17 @@ export async function updateSettings(patch: SettingsPatch): Promise<Settings> {
   const merged = mergeSettings(await getSettings(), patch);
   await browser.storage.local.set({ [STORAGE_KEYS.SETTINGS]: merged });
   return merged;
+}
+
+/**
+ * 새로 설치할 때만 브라우저 UI 언어를 저장한다.
+ * 저장값이 없을 때의 기본값(한국어)은 그대로 두어, 기존 사용자의 화면이 업데이트로 바뀌지 않게 한다.
+ */
+export async function initLanguageOnInstall(): Promise<void> {
+  const result = await browser.storage.local.get([STORAGE_KEYS.SETTINGS]);
+  const stored = result[STORAGE_KEYS.SETTINGS] as Partial<Settings> | undefined;
+  if (stored?.language) return;
+  await updateSettings({ language: browserLanguage() });
 }
 
 async function sendWhitelistRequest(request: WhitelistRequest): Promise<WhitelistResponse> {
