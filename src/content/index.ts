@@ -19,6 +19,9 @@ import { listenForSettingsChanges } from './storage-listener';
 import { startStatsFlush, flushStats, setOnFlush } from '@features/stats';
 import { checkMilestone } from './milestone-banner';
 import { HoverCardObserver, mergeHoverCardBio, shouldObserveHoverCards } from './hover-card-observer';
+import { initAiFiltering } from './ai-filter';
+import { clearAiDetailResults } from './ai-result';
+import { observeAiDetailResult } from './ai-detail-observer';
 
 let feedObserver: FeedObserver;
 let accountSwitchTimerId: ReturnType<typeof setInterval> | null = null;
@@ -94,6 +97,7 @@ function handleNavigate(): void {
   void flushStats();
   feedObserver.disconnect();
   removeFadakBanner();
+  clearAiDetailResults();
   if (!window.location.pathname.includes('/following')) {
     disconnectFollowObserver();
   }
@@ -158,6 +162,7 @@ async function finishInitialSetup(): Promise<void> {
 async function init(): Promise<void> {
   const [settings, whitelist] = await Promise.all([loadSettings(), getWhitelist()]);
   setSettings(settings);
+  await initAiFiltering(() => { restoreHiddenTweets(); reprocessExistingTweets(); });
   await loadFilterRules();
 
   const accountResolved = await loadInitialAccountState(whitelist);
@@ -179,6 +184,7 @@ async function init(): Promise<void> {
   feedObserver = new FeedObserver(processTweet);
   startObserving();
   reprocessExistingTweets();
+  observeAiDetailResult(processTweet);
   syncHoverCardObserver(settings);
 
   setOnNavigate(handleNavigate);

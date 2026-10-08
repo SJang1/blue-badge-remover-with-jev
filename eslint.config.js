@@ -10,6 +10,7 @@ export default tseslint.config(
       'coverage/**',
       'graphify-out/**',
       'test-results/**',
+      'cf-workers/**',
     ],
   },
   js.configs.recommended,

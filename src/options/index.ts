@@ -12,6 +12,7 @@ import { renderCategories, updateStats } from './categories';
 import { bindPackEvents, renderFilterPacks } from './filter-packs';
 import { bindSettingsTransferEvents } from './settings-transfer';
 import { initProtectionSettings } from './protection-settings';
+import { initAiSettings } from './ai-settings';
 
 async function init(): Promise<void> {
   const customEl = document.getElementById('custom-filters') as HTMLTextAreaElement;
@@ -29,6 +30,7 @@ async function init(): Promise<void> {
     (stored[STORAGE_KEYS.DISABLED_FILTER_CATEGORIES] as string[] | undefined) ?? [];
   setPageLanguage(settings.language);
   applyTranslations(settings.language);
+  await initAiSettings();
 
   customEl.value = customText;
   defaultFilterToggle.checked = settings.defaultFilterEnabled;

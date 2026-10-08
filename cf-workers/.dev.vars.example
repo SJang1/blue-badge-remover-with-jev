@@ -1,0 +1,2 @@
+# Optional: leave unset for a public Worker. Uncomment to require authentication.
+# API_TOKEN=replace-with-a-long-random-token

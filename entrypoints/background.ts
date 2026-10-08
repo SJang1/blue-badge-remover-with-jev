@@ -5,11 +5,14 @@ import { MESSAGE_TYPES } from '@shared/constants';
 import { cleanupOldStats } from '@features/stats';
 import { handleWhitelistRequest } from '@features/settings/whitelist-storage';
 import { initLanguageOnInstall } from '@features/settings';
+import { AI_CLASSIFY_MESSAGE } from '@features/ai-filter/settings';
+import { handleAiClassification, initAiBackground } from '@features/ai-filter/background';
 
 const UPDATE_NOTI_FLAG = 'bbr-update-available';
 
 export default defineBackground(() => {
   logger.info('Blue Badge Remover installed');
+  initAiBackground();
 
   const isFirefoxAndroid = navigator.userAgent.includes('Firefox') && navigator.userAgent.includes('Android');
 
@@ -30,6 +33,7 @@ export default defineBackground(() => {
   // content script → 설정 페이지 열기 요청 처리
   browser.runtime.onMessage.addListener((message, sender) => {
     const type = (message as Record<string, unknown>).type;
+    if (type === AI_CLASSIFY_MESSAGE) return handleAiClassification(message).catch(() => ({ ok: false }));
     if (type === MESSAGE_TYPES.WHITELIST) return handleWhitelistRequest(message);
     if (type !== MESSAGE_TYPES.OPEN_SETTINGS) return;
     const settingsUrl = browser.runtime.getURL('/popup.html');

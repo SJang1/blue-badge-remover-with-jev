@@ -4,7 +4,7 @@ import { resolve } from 'path';
 export default defineConfig({
   srcDir: '.',
   outDir: 'dist',
-  manifest: {
+  manifest: ({ manifestVersion }) => ({
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
     default_locale: 'ko',
@@ -13,6 +13,9 @@ export default defineConfig({
       'https://x.com/*',
       'https://twitter.com/*',
     ],
+    ...(manifestVersion === 2
+      ? { optional_permissions: ['https://*/*', 'http://localhost/*', 'http://127.0.0.1/*'] }
+      : { optional_host_permissions: ['https://*/*', 'http://localhost/*', 'http://127.0.0.1/*'] }),
     icons: {
       16: 'icons/icon16.png',
       48: 'icons/icon48.png',
@@ -29,13 +32,14 @@ export default defineConfig({
         id: 'blue-badge-remover@fotone',
         data_collection_permissions: {
           required: ['none'],
+          optional: ['websiteContent', 'personallyIdentifyingInfo', 'personalCommunications', 'authenticationInfo'],
         },
       },
     },
-  },
+  }),
   zip: {
     // AMO 소스 ZIP에서 로컬 전용 산출물 제외 (숨김 파일·node_modules·테스트·outDir은 WXT 기본 제외)
-    excludeSources: ['dist-firefox/**', 'graphify-out/**', 'test-results/**', 'release/**'],
+    excludeSources: ['dist-firefox/**', 'graphify-out/**', 'test-results/**', 'release/**', 'cf-workers/**'],
   },
   vite: () => ({
     resolve: {

@@ -6,7 +6,9 @@ import { extractTweetAuthor, extractRetweeterName, extractRetweeterHandle, extra
 import { isProfilePage, isDetailPage, getPageType } from './page-utils';
 import { profileCache, getSettings, getWhitelistSet, getActiveFilterRules, getProtectedKeywords, getCurrentUserHandle, setCurrentUserHandle, isHandleFollowed, isHandleWhitelisted, getExpandedSet } from './state';
 import { bufferCollectedFadak } from './collector-buffer';
-import { classifyTweet, classifyQuote } from './tweet-classifier';
+import { classifyTweetForMode, classifyQuoteForMode, showAiDetailResult } from './ai-filter';
+import { extractTweetImageUrls } from './ai-images';
+import { removeAiDetailResult } from './ai-result';
 import type { ClassifyResult, QuoteClassifyResult } from './tweet-classifier';
 import { recordHide } from '@features/stats';
 import { isScrollRestorationActive } from './navigation';
@@ -65,6 +67,16 @@ function shouldSkipTweet(
     return true;
   }
   return Boolean(isDetailPage() && statusPath && window.location.pathname.includes(statusPath));
+}
+
+function updateAiDetailResult(tweetEl: HTMLElement, handle: string, statusPath: string | null): void {
+  if (!isDetailPage() || !statusPath || !window.location.pathname.includes(statusPath)) {
+    removeAiDetailResult(tweetEl); return;
+  }
+  showAiDetailResult({
+    text: extractTweetText(tweetEl), handle, displayName: extractDisplayName(tweetEl, handle),
+    isFadak: checkFadak(tweetEl), imageUrls: extractTweetImageUrls(tweetEl),
+  }, tweetEl, processTweet, getSettings());
 }
 
 function getRetweeterContext(
@@ -128,6 +140,7 @@ export function processTweet(tweetEl: HTMLElement): void {
   const { handle } = author;
   const currentUserHandle = getCurrentUserHandle();
   const statusPath = extractTweetStatusPath(tweetEl);
+  updateAiDetailResult(tweetEl, handle, statusPath);
   if (shouldSkipTweet(tweetEl, handle, statusPath, currentUserHandle)) return;
   const settings = getSettings();
   const isFadak = checkFadak(tweetEl);
@@ -146,7 +159,7 @@ export function processTweet(tweetEl: HTMLElement): void {
   if (isFadak && settings.keywordCollectorEnabled) {
     bufferCollectedFadak(handle.toLowerCase(), handle, profile.displayName, profile.bio, tweetText);
   }
-  const result: ClassifyResult = classifyTweet({
+  const result: ClassifyResult = classifyTweetForMode({
     handle, displayName, isFadak, inFollow,
     isRetweet: retweeter.isRetweet,
     isWhitelisted: getWhitelistSet().has(`@${handle.toLowerCase()}`),
@@ -156,7 +169,7 @@ export function processTweet(tweetEl: HTMLElement): void {
     retweeterIsCurrentUser: retweeter.isCurrentUser,
     settings, activeFilterRules: getActiveFilterRules(), protectedKeywords: getProtectedKeywords(), profile, tweetText,
     pageType: getPageType(),
-  });
+  }, tweetEl, processTweet);
   const authorHidden = applyTweetResult(tweetEl, result, handle, retweeter.isRetweet, statusPath, settings);
   let quoteHidden = false;
   if (settings.enabled) {
@@ -184,7 +197,7 @@ function processQuoteBlock(
   // 인용 카드는 그 자체가 뱃지 스코프 — 작성자 영역 스코프(checkFadak) 대신 요소 전체 판정 유지
   const quotedIsFadak = detectBadgeSvg(quoteBlock);
 
-  const result: QuoteClassifyResult = classifyQuote({
+  const result: QuoteClassifyResult = classifyQuoteForMode({
     quotedHandle, quotedIsFadak,
     quotedInFollow: isHandleFollowed(quotedHandle ?? ''),
     quotedIsWhitelisted: isHandleWhitelisted(quotedHandle ?? ''),
@@ -192,11 +205,13 @@ function processQuoteBlock(
     parentIsWhitelisted: isHandleWhitelisted(parentHandle),
     retweeterExempt,
     settings,
-  });
+  }, { text: extractTweetText(quoteBlock), handle: quotedHandle ?? '', displayName: quoteAuthor?.displayName ?? null,
+    isFadak: quotedIsFadak, imageUrls: extractTweetImageUrls(quoteBlock) }, tweetEl, processTweet);
 
   if (result.action === 'hide-entire') {
     const context = {
       reason: QUOTE_ENTIRE_REASON,
+      category: result.reason === 'ai' ? 'Jev / CLEF' : undefined,
       handle: `@${quotedHandle ?? ''}`,
       quotedBy: userLabel,
       preserveHeight: isScrollRestorationActive(),
@@ -214,7 +229,7 @@ function processQuoteBlock(
     showTweet(tweetEl);
   }
   if (result.action === 'hide-quote') {
-    hideQuoteBlock(quoteBlock, { handle: `@${quotedHandle ?? ''}` });
+    hideQuoteBlock(quoteBlock, { handle: `@${quotedHandle ?? ''}`, category: result.reason === 'ai' ? 'Jev / CLEF' : undefined });
   } else if (quoteBlock.hasAttribute('data-bbr-hidden-quote')) {
     showQuoteBlock(quoteBlock);
   }

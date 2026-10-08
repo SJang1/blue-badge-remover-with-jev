@@ -1,7 +1,7 @@
-<h1 align="center">Blue Badge Remover</h1>
+<h1 align="center">Blue Badge Remover with Jev(clef)</h1>
 
 <p align="center">
-  <img src="public/icons/icon.svg" alt="Blue Badge Remover" width="96">
+  <img src="public/icons/icon.svg" alt="Blue Badge Remover with Jev(clef)" width="96">
 </p>
 
 <p align="center">
@@ -10,16 +10,12 @@
 </p>
 
 <p align="center">
-  <a href="https://chromewebstore.google.com/detail/blue-badge-remover/cjhmbgfnddpcdfmoicfcocekmainhhdm"><img alt="Chrome Web Store에서 설치" src="https://img.shields.io/badge/Chrome_Web_Store-설치-4285F4?logo=googlechrome&amp;logoColor=white"></a>
-  <a href="https://addons.mozilla.org/ko/firefox/addon/blue-badge-remover/"><img alt="Firefox 부가 기능에서 설치" src="https://img.shields.io/badge/Firefox-설치-FF7139?logo=firefoxbrowser&amp;logoColor=white"></a>
-  <img alt="Chrome·Edge Manifest V3" src="https://img.shields.io/badge/Manifest-V3-blue">
-  <img alt="TypeScript strict" src="https://img.shields.io/badge/TypeScript-strict-3178c6">
-  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green"></a>
-  <a href="https://x.com/Fotoner_P/status/2037977299191251444"><img alt="X 소개 글" src="https://img.shields.io/badge/Featured_on-X-000000?logo=x&amp;logoColor=white"></a>
+  <strong>주의: 본 확장프로그램 개선판은 모든 게시물을 Cloudflare 서버로 보내어 AI를 활용해 파딱 여부를 판정하는 기능을 포함하였습니다.</strong><br>
+  AI 사용에 부정적이신 분들 또는 개인정보가 걱정되시는 분들, 민감정보(19+ 포함)를 다루시는 분들은 다른 확장프로그램을 이용하시기 바랍니다.
 </p>
 
 <p align="center">
-  <a href="https://github.com/fotoner/blue-badge-remover/releases">릴리스 다운로드</a>
+  <a href="https://github.com/SJang1/blue-badge-remover-with-jev/releases">릴리스 다운로드</a>
 </p>
 
 ## 화면
@@ -51,9 +47,6 @@
 - **통계와 언어**: 오늘·전체 숨김 수와 키워드 카테고리별 통계를 확인할 수 있습니다. 한국어·영어·일본어를 지원합니다.
 
 ## 설치와 사용
-
-Chrome은 [웹 스토어](https://chromewebstore.google.com/detail/blue-badge-remover/cjhmbgfnddpcdfmoicfcocekmainhhdm), Firefox는 [부가 기능 페이지](https://addons.mozilla.org/ko/firefox/addon/blue-badge-remover/)에서 설치합니다.
-Edge는 [릴리스](https://github.com/fotoner/blue-badge-remover/releases)의 Edge ZIP을 압축 해제한 뒤, `edge://extensions`에서 **개발자 모드 → 압축 해제된 확장 로드**로 폴더를 선택합니다.
 
 1. X에 로그인하고, 이미 열려 있던 페이지는 새로고침합니다.
 2. 확장 아이콘을 눌러 필터링을 켜거나 끕니다. 세부 옵션은 **설정 열기**에서 변경합니다.

@@ -227,7 +227,7 @@ export function hideQuoteBlock(quoteElement: HTMLElement, context?: HideQuoteCon
   placeholder.innerHTML = SHIELD_ICON;
 
   const textSpan = document.createElement('span');
-  textSpan.textContent = t('hiddenQuoteTweet', currentLanguage, { handle });
+  textSpan.textContent = t(context?.category === 'Jev / CLEF' ? 'hiddenTweetAi' : 'hiddenQuoteTweet', currentLanguage, { handle });
   placeholder.appendChild(textSpan);
 
   placeholder.addEventListener('click', (e) => {
@@ -280,6 +280,7 @@ function buildHideLabel(context?: HideContext): string {
   if (!context) return t('hiddenTweetClick', currentLanguage);
 
   const handle = context.handle ?? '';
+  if (context.reason === 'ai' || context.category === 'Jev / CLEF') return t('hiddenTweetAi', currentLanguage, { handle });
 
   let label: string;
   switch (context.reason) {

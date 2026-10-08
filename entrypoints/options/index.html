@@ -16,6 +16,53 @@
       <p class="subtitle" data-i18n="advancedFilterSettings">고급 필터 설정</p>
     </header>
 
+    <form id="ai-settings" class="section" novalidate>
+      <div class="section-header">
+        <h2 class="section-title" data-i18n="aiFilterTitle">Jev / CLEF AI 필터</h2>
+        <label class="toggle-label">
+          <span class="toggle-text" data-i18n="aiEnable">AI 사용</span>
+          <input type="checkbox" id="ai-enabled">
+        </label>
+      </div>
+      <p class="guide-desc ai-notice" data-i18n="aiDisclosure">AI를 켜면 게시물 본문·첨부 이미지·작성자 이름·파딱 여부·부가설명을 지정한 Worker와 Cloudflare로 전송합니다. 사진은 확장이 내려받아 함께 보냅니다. 사용량에 따른 비용과 오판이 발생할 수 있습니다.</p>
+      <p class="guide-desc ai-notice" data-i18n="aiModeHint">AI 확률로 숨김 여부를 결정합니다. 팔로우·화이트리스트·보호 키워드와 기존 필터링 범위·숨김 방식은 유지합니다.</p>
+      <label class="ai-field-label" for="ai-worker-url" data-i18n="aiWorkerUrl">Worker 주소</label>
+      <input id="ai-worker-url" class="ai-input" type="url" placeholder="https://blue-badge-remover-jev.example.workers.dev" autocomplete="off">
+      <label class="ai-field-label" for="ai-api-token" data-i18n="aiApiToken">Worker 인증 토큰 (선택)</label>
+      <input id="ai-api-token" class="ai-input" type="password" autocomplete="off">
+      <p class="guide-desc" data-i18n="aiTokenHint">공개 Worker는 비워 두세요. 인증을 설정한 Worker만 API_TOKEN을 입력합니다.</p>
+      <p class="ai-question"><span data-i18n="aiQuestion">판단 질문</span>: <code id="ai-question" aria-live="polite"></code></p>
+
+      <div class="category-card ai-profile">
+        <h3 data-i18n="aiFadakGroup">파딱 작성자용 CLEF</h3>
+        <p class="guide-desc" data-i18n="aiFadakPrior">필터링 대상일 가능성을 높게 보되, 일반인의 글이면 낮춥니다.</p>
+        <label id="ai-fadak-label" class="ai-field-label" for="ai-fadak-threshold" data-i18n="aiThreshold">이 확률 이상이면 숨김</label>
+        <div class="ai-threshold-row">
+          <input id="ai-fadak-threshold" type="range" min="0" max="100" step="1" value="70" aria-labelledby="ai-fadak-label">
+          <input id="ai-fadak-percent" class="ai-input ai-percent" type="number" min="0" max="100" step="1" value="70" required aria-labelledby="ai-fadak-label"><span>%</span>
+        </div>
+        <label class="ai-field-label" for="ai-fadak-context" data-i18n="aiContext">부가설명 (context, 선택)</label>
+        <textarea id="ai-fadak-context" class="filter-textarea compact" maxlength="4000" data-i18n-placeholder="aiContextPlaceholder" placeholder="판단에 참고할 설명을 입력하세요"></textarea>
+      </div>
+
+      <div class="category-card ai-profile">
+        <h3 data-i18n="aiNormalGroup">일반 작성자용 CLEF</h3>
+        <p class="guide-desc" data-i18n="aiNormalPrior">일반인일 가능성을 높게 보되, 필터링 대상의 근거가 있으면 높입니다.</p>
+        <label id="ai-normal-label" class="ai-field-label" for="ai-normal-threshold" data-i18n="aiThreshold">이 확률 이상이면 숨김</label>
+        <div class="ai-threshold-row">
+          <input id="ai-normal-threshold" type="range" min="0" max="100" step="1" value="70" aria-labelledby="ai-normal-label">
+          <input id="ai-normal-percent" class="ai-input ai-percent" type="number" min="0" max="100" step="1" value="70" required aria-labelledby="ai-normal-label"><span>%</span>
+        </div>
+        <label class="ai-field-label" for="ai-normal-context" data-i18n="aiContext">부가설명 (context, 선택)</label>
+        <textarea id="ai-normal-context" class="filter-textarea compact" maxlength="4000" data-i18n-placeholder="aiContextPlaceholder" placeholder="판단에 참고할 설명을 입력하세요"></textarea>
+      </div>
+      <p class="guide-desc" data-i18n="aiThresholdHint">필터링 대상일 확률입니다. 낮출수록 더 많이 가립니다. 응답 대기·오류 시에는 표시합니다. 기본값은 두 그룹 모두 70%입니다.</p>
+      <div class="btn-row">
+        <button id="ai-save" class="btn-primary" type="submit" data-i18n="aiSave">AI 설정 저장</button>
+        <span id="ai-status" class="save-status" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+
     <section class="section">
       <div class="stats-bar">
         <div class="stat-item">
